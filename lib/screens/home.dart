@@ -5,6 +5,7 @@ import 'package:journal_app/theme/theme_provider.dart';
 import 'home_page.dart';
 import 'search_page.dart';
 import 'settings_page.dart';
+import 'entry_creation_page.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -50,7 +51,10 @@ class _HomeState extends State<Home> {
       actions: [
         IconButton(
           onPressed: () {
-            // TODO: Implement add functionality
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const EntryCreationPage()),
+            );
           },
           icon: const Icon(Icons.add),
         ),

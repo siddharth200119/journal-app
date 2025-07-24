@@ -24,8 +24,10 @@ class _OnboardingState extends State<Onboarding> {
 
     if (!isFirstLaunch) {
       debugPrint("Not first launch: Navigate to home");
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const Home()));
+      if (mounted) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const Home()));
+      }
     } else {
       debugPrint("First launch: Showing onboarding");
     }
@@ -44,9 +46,9 @@ class _OnboardingState extends State<Onboarding> {
           const SizedBox(height: 10),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Column(

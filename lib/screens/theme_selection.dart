@@ -6,7 +6,8 @@ import 'package:journal_app/theme/color_schemes.dart';
 import 'package:journal_app/theme/theme_provider.dart';
 
 class ThemeSelectionScreen extends StatefulWidget {
-  const ThemeSelectionScreen({super.key});
+  final bool isFromSettings;
+  const ThemeSelectionScreen({super.key, this.isFromSettings = false});
 
   @override
   State<ThemeSelectionScreen> createState() => _ThemeSelectionScreenState();
@@ -45,12 +46,28 @@ class _ThemeSelectionScreenState extends State<ThemeSelectionScreen>
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     themeProvider.setColorScheme(_selectedColorSchemeIndex);
 
+    if (widget.isFromSettings) {
+      if (mounted) {
+        Navigator.pop(context);
+      }
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('first_launch', false);
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const Home()),
-    );
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const Home()),
+      );
+    }
+  }
+
+  Color _getBorderColor(Color color) {
+    final hsl = HSLColor.fromColor(color);
+    final newLightness =
+        hsl.lightness > 0.7 ? hsl.lightness - 0.2 : hsl.lightness + 0.2;
+    return hsl.withLightness(newLightness.clamp(0.0, 1.0)).toColor();
   }
 
   @override
@@ -77,18 +94,16 @@ class _ThemeSelectionScreenState extends State<ThemeSelectionScreen>
                 ElevatedButton(
                   onPressed: _saveThemeAndNavigate,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: lightColorSchemes[_selectedColorSchemeIndex].primary,
+                    backgroundColor:
+                        lightColorSchemes[_selectedColorSchemeIndex].primary,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 50,
                       vertical: 15,
                     ),
                   ),
-                  child: const Text(
-                    'Continue',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white
-                    ),
+                  child: Text(
+                    widget.isFromSettings ? 'Save' : 'Continue',
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
               ],
@@ -103,6 +118,8 @@ class _ThemeSelectionScreenState extends State<ThemeSelectionScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(lightColorSchemes.length, (index) {
+        final colorScheme = lightColorSchemes[index];
+        final isSelected = _selectedColorSchemeIndex == index;
         return GestureDetector(
           onTap: () {
             setState(() {
@@ -113,10 +130,11 @@ class _ThemeSelectionScreenState extends State<ThemeSelectionScreen>
             width: 70,
             height: 70,
             decoration: BoxDecoration(
-              color: lightColorSchemes[index].primary,
+              color: colorScheme.primary,
               shape: BoxShape.circle,
-              border: _selectedColorSchemeIndex == index
-                  ? Border.all(color: Colors.blue, width: 4)
+              border: isSelected
+                  ? Border.all(
+                      color: _getBorderColor(colorScheme.primary), width: 4)
                   : null,
             ),
           ),
@@ -125,3 +143,4 @@ class _ThemeSelectionScreenState extends State<ThemeSelectionScreen>
     );
   }
 }
+

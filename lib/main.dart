@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:journal_app/screens/onboarding.dart';
 import 'package:journal_app/theme/theme_provider.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

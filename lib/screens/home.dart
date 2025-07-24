@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:journal_app/theme/theme_provider.dart';
 import 'home_page.dart';
 import 'search_page.dart';
 import 'settings_page.dart';
@@ -22,10 +24,15 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final systemOverlayStyle = isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.themeMode == ThemeMode.dark ||
+        (themeProvider.themeMode == ThemeMode.system &&
+            Theme.of(context).brightness == Brightness.dark);
+    final systemOverlayStyle =
+        isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       extendBodyBehindAppBar: true,
       appBar: _buildAppBar(systemOverlayStyle),
       body: _buildBody(systemOverlayStyle),
@@ -38,7 +45,7 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       centerTitle: true,
-      title: Text('Journal'),
+      title: const Text('Journal'),
       automaticallyImplyLeading: false,
       actions: [
         IconButton(
